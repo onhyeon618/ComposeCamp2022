@@ -31,8 +31,6 @@ import com.codelab.basics.ui.theme.BasicsCodelabTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // setContent: Composable 함수가 들어갈 수 있는 영역 생성
         setContent {
             BasicsCodelabTheme {
                 MyApp(modifier = Modifier.fillMaxSize())
@@ -43,14 +41,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MyApp(modifier: Modifier = Modifier) {
-    // = 대신 by를 사용하면 shouldShowOnboarding.value 대신 shouldShowOnboarding를 바로 사용할 수 있다.
-    // remember: 구성이 변경되어(화면 회전 등) composable이 destroy 되면 값이 사라진다.
-    // 구성 변경 시에도 값을 유지하려면 rememberSaveable 사용
     var shouldShowOnboarding by rememberSaveable { mutableStateOf(true) }
 
     Surface(modifier) {
         if (shouldShowOnboarding) {
-            // state를 직접 넘겨주는 대신 콜백 함수를 넘김
             OnboardingScreen(onContinueClicked = { shouldShowOnboarding = false })
         } else {
             Greetings()
@@ -86,7 +80,6 @@ fun OnboardingScreen(
     }
 }
 
-// Preview는 여러 개 사용 가능
 @Preview(showBackground = true, widthDp = 320, heightDp = 320)
 @Composable
 fun OnboardingPreview() {
@@ -100,8 +93,6 @@ private fun Greetings(
     modifier: Modifier = Modifier,
     names: List<String> = List(1000) { "$it" }
 ) {
-    // 목록을 "효율적으로" 사용하려면 LazyColumn / LazyRow를 활용한다.
-    // Android에서 RecyclerView, Flutter에서 ListView를 사용하는 것과 같은 이치.
     LazyColumn(modifier = modifier.padding(vertical = 4.dp)) {
         items(items = names) { name ->
             Greeting(name = name)
@@ -136,8 +127,6 @@ private fun CardContent(name: String) {
     Row(
         modifier = Modifier
             .padding(12.dp)
-            // extraPadding(animateDpAsState) 대신 animateContentSize 활용
-            // animateContentSize: 애니메이션을 알아서 생성해준다. coerceAtLeast가 필요없어짐.
             .animateContentSize(
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioMediumBouncy,
@@ -150,11 +139,9 @@ private fun CardContent(name: String) {
                 .weight(1f)
                 .padding(12.dp)
         ) {
-            // child element: Flutter와 달리 단순히 나열하여 사용 가능
             Text(text = "Hello,")
             Text(
                 text = name,
-                // MaterialTheme에 지정해 둔 값 사용 가능 + copy를 활용하여 수정 사용 가능
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.ExtraBold
                 )
