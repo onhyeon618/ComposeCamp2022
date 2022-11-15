@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +39,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp(modifier: Modifier = Modifier) {
     // = 대신 by를 사용하면 shouldShowOnboarding.value 대신 shouldShowOnboarding를 바로 사용할 수 있다.
-    var shouldShowOnboarding by remember { mutableStateOf(true) }
+    // remember: 구성이 변경되어(화면 회전 등) composable이 destroy 되면 값이 사라진다.
+    // 구성 변경 시에도 값을 유지하려면 rememberSaveable 사용
+    var shouldShowOnboarding by rememberSaveable { mutableStateOf(true) }
 
     Surface(modifier) {
         if (shouldShowOnboarding) {
