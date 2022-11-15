@@ -3,6 +3,9 @@ package com.codelab.basics
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -114,17 +117,18 @@ private fun GreetingsPreview() {
 
 @Composable
 private fun Greeting(name: String) {
-    // state 추가하기:
+    var expanded by remember { mutableStateOf(false) }
 
-    // var expanded = false -> 이런 방식으로는 동작하지 않는다.
-    // 1. it's not being tracked by Compose
-    // 2. Greeting()이 호출될 때마다 expanded는 false로 다시 초기화될 것.
-
-    // remember: recomposition 될 때마다 값을 다시 부여받지 않도록, 자신의 값을 보존하게 함
-    // mutableStateOf(): composable이 사용하는 state로 지정
-    val expanded = remember { mutableStateOf(false) }
-
-    val extraPadding = if (expanded.value) 48.dp else 0.dp
+    // animateDpAsState: 애니메이션이 완료될 때까지 value가 계속 업데이트되는 State 객체 반환
+    // animate*AsState로 생성된 애니메이션은 실행 도중에 interrupt될 수 있다.
+    val extraPadding by animateDpAsState(
+        if (expanded) 48.dp else 0.dp,
+        // animationSpec: 애니메이션 커스터마이징 가능
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        )
+    )
 
     Surface(
         color = MaterialTheme.colorScheme.primary,
@@ -135,17 +139,18 @@ private fun Greeting(name: String) {
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(bottom = extraPadding)
+                    // 절대 음수값을 가지지 않게, coerceAtLeast로 최소값 지정
+                    // padding이 음수가 되면 앱이 crash된다.
+                    .padding(bottom = extraPadding.coerceAtLeast(0.dp))
             ) {
                 // child element: Flutter와 달리 단순히 나열하여 사용 가능
                 Text(text = "Hello,")
                 Text(text = name)
             }
             ElevatedButton(
-                // 함수를 전달!!
-                onClick = { expanded.value = !expanded.value },
+                onClick = { expanded = !expanded }
             ) {
-                Text(if (expanded.value) "Show less" else "Show more")
+                Text(if (expanded) "Show less" else "Show more")
             }
         }
     }
