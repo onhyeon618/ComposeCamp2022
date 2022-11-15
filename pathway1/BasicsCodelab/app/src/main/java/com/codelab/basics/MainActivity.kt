@@ -4,17 +4,16 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +22,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -119,47 +119,62 @@ private fun GreetingsPreview() {
 
 @Composable
 private fun Greeting(name: String) {
-    var expanded by remember { mutableStateOf(false) }
-
-    // animateDpAsState: 애니메이션이 완료될 때까지 value가 계속 업데이트되는 State 객체 반환
-    // animate*AsState로 생성된 애니메이션은 실행 도중에 interrupt될 수 있다.
-    val extraPadding by animateDpAsState(
-        if (expanded) 48.dp else 0.dp,
-        // animationSpec: 애니메이션 커스터마이징 가능
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        )
-    )
-
-    Surface(
-        color = MaterialTheme.colorScheme.primary,
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        ),
         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
-        // modifier: UI 요소의 외형 및 동작 방식 규정 ... "To add multiple modifiers to an element, you simply chain them."
-        Row(modifier = Modifier.padding(24.dp)) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    // 절대 음수값을 가지지 않게, coerceAtLeast로 최소값 지정
-                    // padding이 음수가 되면 앱이 crash된다.
-                    .padding(bottom = extraPadding.coerceAtLeast(0.dp))
-            ) {
-                // child element: Flutter와 달리 단순히 나열하여 사용 가능
-                Text(text = "Hello,")
+        CardContent(name)
+    }
+}
+
+@Composable
+private fun CardContent(name: String) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier
+            .padding(12.dp)
+            // extraPadding(animateDpAsState) 대신 animateContentSize 활용
+            // animateContentSize: 애니메이션을 알아서 생성해준다. coerceAtLeast가 필요없어짐.
+            .animateContentSize(
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            )
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(12.dp)
+        ) {
+            // child element: Flutter와 달리 단순히 나열하여 사용 가능
+            Text(text = "Hello,")
+            Text(
+                text = name,
+                // MaterialTheme에 지정해 둔 값 사용 가능 + copy를 활용하여 수정 사용 가능
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.ExtraBold
+                )
+            )
+            if (expanded) {
                 Text(
-                    text = name,
-                    // MaterialTheme에 지정해 둔 값 사용 가능 + copy를 활용하여 수정 사용 가능
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.ExtraBold
-                    )
+                    text = ("Composem ipsum color sit lazy, " +
+                            "padding theme elit, sed do bouncy. ").repeat(4),
                 )
             }
-            ElevatedButton(
-                onClick = { expanded = !expanded }
-            ) {
-                Text(if (expanded) "Show less" else "Show more")
-            }
+        }
+        IconButton(onClick = { expanded = !expanded }) {
+            Icon(
+                imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                contentDescription = if (expanded) {
+                    stringResource(R.string.show_less)
+                } else {
+                    stringResource(R.string.show_more)
+                }
+            )
         }
     }
 }
