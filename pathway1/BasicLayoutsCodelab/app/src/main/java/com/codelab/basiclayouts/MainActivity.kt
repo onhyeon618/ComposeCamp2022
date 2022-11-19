@@ -23,6 +23,8 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -131,12 +133,23 @@ fun FavoriteCollectionCard(
     }
 }
 
-// Step: Align your body row - Arrangements
 @Composable
 fun AlignYourBodyRow(
     modifier: Modifier = Modifier
 ) {
-    // Implement composable here
+    LazyRow(
+        // spacedBy: add a fixed space in between each child composable
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        // padding: 전체 패딩. 스크롤을 해도 좌우/상하에 여백이 보인다. (클리핑 발생)
+        // contentPadding: 리스트 양 끝에만 여백 추가. 스크롤 시 클리핑이 발생하지 않는다.
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        modifier = modifier
+    ) {
+        // alignYourBodyData의 각 요소를 AlignYourBodyElement(...)로 변환하여 반환
+        items(alignYourBodyData) { item ->
+            AlignYourBodyElement(item.drawable, item.text)
+        }
+    }
 }
 
 // Step: Favorite collections grid - LazyGrid
