@@ -79,7 +79,7 @@ fun SearchBar(
         },
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 56.dp)  // 글자 크기 설정이 바뀔 수 있으므로, 고정 크기보다는 mim 크기 활용
+            .heightIn(min = 56.dp)
     )
 }
 
@@ -89,9 +89,6 @@ fun AlignYourBodyElement(
     @StringRes text: Int,
     modifier: Modifier = Modifier
 ) {
-    // "instead of telling the child to position itself in its parent,
-    // you tell the parent how to align its children."
-    // 특정 자식의 위치만 바꾸려면 해당 자식에 align modifier를 적용하면 된다.
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -99,15 +96,14 @@ fun AlignYourBodyElement(
         Image(
             painter = painterResource(drawable),
             contentDescription = null,
-            contentScale = ContentScale.Crop,  // most notably: Fit, FillBounds, Crop
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(88.dp)
-                .clip(CircleShape)  // adapts the composable's appearance
+                .clip(CircleShape)
         )
         Text(
             text = stringResource(text),
             style = MaterialTheme.typography.h3,
-            // paddingFromBaseline -> Composable 전체가 아니라 baseline으로부터의 패딩을 설정
             modifier = Modifier.paddingFromBaseline(
                 top = 24.dp, bottom = 8.dp
             )
@@ -149,14 +145,10 @@ fun AlignYourBodyRow(
     modifier: Modifier = Modifier
 ) {
     LazyRow(
-        // spacedBy: add a fixed space in between each child composable
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        // padding: 전체 패딩. 스크롤을 해도 좌우/상하에 여백이 보인다. (클리핑 발생)
-        // contentPadding: 리스트 양 끝에만 여백 추가. 스크롤 시 클리핑이 발생하지 않는다.
         contentPadding = PaddingValues(horizontal = 16.dp),
         modifier = modifier
     ) {
-        // alignYourBodyData의 각 요소를 AlignYourBodyElement(...)로 변환하여 반환
         items(alignYourBodyData) { item ->
             AlignYourBodyElement(item.drawable, item.text)
         }
@@ -167,7 +159,6 @@ fun AlignYourBodyRow(
 fun FavoriteCollectionsGrid(
     modifier: Modifier = Modifier
 ) {
-    // The grid takes up as much space as its parent by default
     LazyHorizontalGrid(
         rows = GridCells.Fixed(2),
         contentPadding = PaddingValues(horizontal = 16.dp),
@@ -184,7 +175,6 @@ fun FavoriteCollectionsGrid(
     }
 }
 
-// Slot-based layout: leave an empty space in the UI for the developer to fill as they wish
 @Composable
 fun HomeSection(
     @StringRes title: Int,
@@ -207,12 +197,9 @@ fun HomeSection(
 fun HomeScreen(modifier: Modifier = Modifier) {
     Column(
         modifier
-            // Column에는 verticalScroll() modifier를 이용해 스크롤 동작을 지정할 수 있다.
             .verticalScroll(rememberScrollState())
             .padding(vertical = 16.dp)
     ) {
-        // Spacer: Column 내에 여백을 주기 위해 사용
-        // Spacer(Modifier.height(16.dp))
         SearchBar(Modifier.padding(horizontal = 16.dp))
         HomeSection(title = R.string.align_your_body) {
             AlignYourBodyRow()
@@ -226,7 +213,6 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 @Composable
 private fun SootheBottomNavigation(modifier: Modifier = Modifier) {
     BottomNavigation(
-        // 배경색을 설정하면 아이콘은 자동으로 테마의 onBackground 색상을 사용한다.
         backgroundColor = MaterialTheme.colors.background,
         modifier = modifier
     ) {
@@ -259,8 +245,6 @@ private fun SootheBottomNavigation(modifier: Modifier = Modifier) {
     }
 }
 
-// Scaffold: offers top-level configurable composable for apps that implement Material design.
-// 이름도 그렇고, 이 부분은 Flutter와 유사한 듯?
 @Composable
 fun MySootheApp() {
     MySootheTheme {
@@ -347,7 +331,6 @@ fun HomeSectionPreview() {
     }
 }
 
-// 스크롤 동작을 확인하기 위해 heightDp에 제한을 둠
 @Preview(showBackground = true, backgroundColor = 0xFFF0EAE2, heightDp = 180)
 @Composable
 fun ScreenContentPreview() {
