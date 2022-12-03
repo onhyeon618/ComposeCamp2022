@@ -15,8 +15,13 @@ fun WaterCounter(modifier: Modifier = Modifier) {
         // 위 방식을 보다 간소하게 사용하려면 다음과 같이 쓸 수 있다:
         var count by remember { mutableStateOf(0) }
 
-        Text("You've had $count glasses.")
-        Button(onClick = { count++ }, Modifier.padding(top = 8.dp)) {
+        if (count > 0) {
+            // This text is present if the button has been clicked
+            // at least once; absent otherwise
+            Text("You've had $count glasses.")
+        }
+        // state는 여러 개의 서로 다른 위치에서도 사용할 수 있다.
+        Button(onClick = { count++ }, Modifier.padding(top = 8.dp), enabled = count < 10) {
             Text("Add one")
         }
     }
