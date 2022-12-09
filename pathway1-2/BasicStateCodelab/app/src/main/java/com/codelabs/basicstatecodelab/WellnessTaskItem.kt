@@ -16,7 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun WellnessTaskItem(taskName: String, modifier: Modifier = Modifier) {
+fun WellnessTaskItem(
+    taskName: String, onClose: () -> Unit, modifier: Modifier = Modifier
+) {
     // 아래처럼 사용할 경우,
     // 스크롤을 내렸다가 돌아오면 체크가 해제되어 있는 걸 확인할 수 있다.
     // (LazyColumn의, 필요한 아이템만 빌드하는 특성 때문.)
@@ -29,7 +31,7 @@ fun WellnessTaskItem(taskName: String, modifier: Modifier = Modifier) {
         taskName = taskName,
         checked = checkedState,
         onCheckedChange = { newValue -> checkedState = newValue },
-        onClose = {}, // we will implement this later!
+        onClose = onClose,
         modifier = modifier,
     )
 }
