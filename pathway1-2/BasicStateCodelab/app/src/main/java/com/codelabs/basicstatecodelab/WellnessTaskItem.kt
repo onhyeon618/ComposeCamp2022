@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-// 더이상 stateful 할 필요가 없다 -> 위에서 처리해주므로!(hoisted)
 @Composable
 fun WellnessTaskItem(
     taskName: String,

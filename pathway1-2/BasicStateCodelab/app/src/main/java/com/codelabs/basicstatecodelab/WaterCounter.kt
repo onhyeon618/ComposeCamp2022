@@ -12,10 +12,6 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun WaterCounter(modifier: Modifier = Modifier) {
     Column(modifier = modifier.padding(16.dp)) {
-        // remember: 구성 변경(configuration change)이 발생하면 값이 날아간다.
-        // var count by remember { mutableStateOf(0) }
-
-        // 구성 변경 시에도 값을 유지하려면 rememberSaveable 사용.
         var count by rememberSaveable { mutableStateOf(0) }
 
         if (count > 0) {
@@ -27,7 +23,6 @@ fun WaterCounter(modifier: Modifier = Modifier) {
     }
 }
 
-// State hoisting: a pattern of moving state to a composable's caller to make a composable stateless.
 @Composable
 fun StatefulCounter(modifier: Modifier = Modifier) {
     var count by rememberSaveable { mutableStateOf(0) }
