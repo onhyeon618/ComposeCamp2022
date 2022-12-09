@@ -96,8 +96,6 @@ fun Header(
     text: String,
     modifier: Modifier = Modifier
 ) {
-    // 색을 지정할 때는, 가급적 composable에 직접 색을 주기보다 Surface로 감싸 사용한다.
-    // -> Content colors를 활용하기 위함.
     Surface(
         color = MaterialTheme.colors.onSurface.copy(alpha = 0.1f),
         contentColor = MaterialTheme.colors.primary,
@@ -157,8 +155,6 @@ private fun PostMetadata(
 ) {
     val divider = "  •  "
     val tagDivider = "  "
-    // Flutter의 RichText 같네...
-    // 차이라면 Flutter는 children[]으로 TextSpan 위젯을 나열하고, Compose는 String을 append한다는 점?
     val text = buildAnnotatedString {
         append(post.metadata.date)
         append(divider)
