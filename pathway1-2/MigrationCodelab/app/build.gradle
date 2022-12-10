@@ -46,7 +46,7 @@ android {
     }
     buildFeatures {
         dataBinding true
-        compose true
+        compose true  // compose를 사용할 수 있게 해준다.
     }
     composeOptions {
         kotlinCompilerExtensionVersion rootProject.composeCompilerVersion
