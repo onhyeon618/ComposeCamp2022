@@ -53,7 +53,6 @@ class PlantDetailFragmentTest {
     @JvmField
     val activityTestRule = ActivityScenarioRule(GardenActivity::class.java)
 
-    // activity/fragment가 컴포즈를 사용한다면, rule은 createAndroidComposeRule를 사용해야 한다.
     @Rule
     @JvmField
     val composeTestRule = createAndroidComposeRule<GardenActivity>()
