@@ -31,6 +31,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.composethemeadapter.MdcTheme
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.samples.apps.sunflower.R
@@ -120,7 +121,8 @@ class PlantDetailFragment : Fragment() {
                 )
                 setContent {
                     // 여기부터는 Compose 영역!
-                    MaterialTheme {
+                    // MdcTheme은 View system의 theme을 상속받아 사용하게 해준다.
+                    MdcTheme {
                         PlantDetailDescription(plantDetailViewModel)
                     }
                 }
