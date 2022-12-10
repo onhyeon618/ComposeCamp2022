@@ -23,16 +23,40 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.samples.apps.sunflower.R
+import com.google.samples.apps.sunflower.data.Plant
+import com.google.samples.apps.sunflower.viewmodels.PlantDetailViewModel
 
 @Composable
-fun PlantDetailDescription() {
-    Surface {
-        Text("Hello Compose")
+fun PlantDetailDescription(plantDetailViewModel: PlantDetailViewModel) {
+    // composable에서 LiveData를 받아오려면 LiveData.observeAsState()를 사용한다.
+    val plant by plantDetailViewModel.plant.observeAsState()
+
+    // LivaData에서 받아온 값은 null일 수 있으므로 null-check를 해야 한다.
+    // 해당 과정을 분리하고 재사용성을 높이기 위해, PlantDetailContent()를 만들어 감싸게 하고,
+    // 외부에서는 PlantDetailDescription()를 사용한다.
+    plant?.let {
+        PlantDetailContent(it)
+    }
+}
+
+@Composable
+fun PlantDetailContent(plant: Plant) {
+    PlantName(plant.name)
+}
+
+@Preview
+@Composable
+private fun PlantDetailContentPreview() {
+    val plant = Plant("id", "Apple", "description", 3, 30, "")
+    MaterialTheme {
+        PlantDetailContent(plant)
     }
 }
 

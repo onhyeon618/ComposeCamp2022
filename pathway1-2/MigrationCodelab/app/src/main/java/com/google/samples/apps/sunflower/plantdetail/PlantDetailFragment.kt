@@ -112,7 +112,7 @@ class PlantDetailFragment : Fragment() {
             composeView.setContent {
                 // 여기부터는 Compose 영역!
                 MaterialTheme {
-                    PlantDetailDescription()
+                    PlantDetailDescription(plantDetailViewModel)
                 }
             }
         }
