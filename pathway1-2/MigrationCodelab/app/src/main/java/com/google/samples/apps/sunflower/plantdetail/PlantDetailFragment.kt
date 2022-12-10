@@ -21,6 +21,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.material.MaterialTheme
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ShareCompat
 import androidx.core.widget.NestedScrollView
@@ -104,6 +105,14 @@ class PlantDetailFragment : Fragment() {
                         true
                     }
                     else -> false
+                }
+            }
+
+            // xml에 만들었던 ComposeView에, setContent를 이용해 내용물을 채운다
+            composeView.setContent {
+                // 여기부터는 Compose 영역!
+                MaterialTheme {
+                    PlantDetailDescription()
                 }
             }
         }
