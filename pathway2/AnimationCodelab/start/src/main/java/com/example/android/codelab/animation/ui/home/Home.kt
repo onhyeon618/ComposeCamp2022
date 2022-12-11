@@ -582,8 +582,20 @@ private fun WeatherRow(
  */
 @Composable
 private fun LoadingRow() {
-    // TODO 5: Animate this value between 0f and 1f, then back to 0f repeatedly.
-    val alpha = 1f
+    // 무기한으로 반복하는 애니메이션 효과를 넣으려면 InfiniteTransition를 쓴다.
+    val infiniteTransition = rememberInfiniteTransition()
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            // 전체 duration 중 특정 지점에서의 값 수준을 지정할 수 있다!
+            animation = keyframes {
+                durationMillis = 1000
+                0.7f at 500
+            },
+            repeatMode = RepeatMode.Reverse   // 디폴트는 RepeatMode.Restart
+        )
+    )
     Row(
         modifier = Modifier
             .heightIn(min = 64.dp)
