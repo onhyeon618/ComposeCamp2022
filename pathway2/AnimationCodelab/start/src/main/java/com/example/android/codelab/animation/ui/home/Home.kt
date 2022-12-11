@@ -159,9 +159,6 @@ fun Home() {
     val lazyListState = rememberLazyListState()
 
     // The background color. The value is changed by the current tab.
-    // 비교적 간단한 값 변경(value change)를 animate할 때는 animate*AsState를 활용한다.
-    // 이 경우 색상을 변경하는 것이므로 animateColorAsState를 사용.
-    // 이는 State<T> 객체를 반환하므로, by를 통해 변수처럼 사용할 수 있다.
     val backgroundColor by animateColorAsState(if (tabPage == TabPage.Home) Purple100 else Green300)
 
     // The coroutine scope for event handlers calling suspend functions.
@@ -274,8 +271,6 @@ private fun HomeFloatingActionButton(
                 contentDescription = null
             )
             // Toggle the visibility of the content with animation.
-            // 특정 composable의 visibility를 animate하려면 AnimatedVisibility() 활용.
-            // 주어진 boolean 값이 바뀔 때마다 애니메이션을 실행한다.
             AnimatedVisibility(extended) {
                 Text(
                     text = stringResource(R.string.edit),
@@ -294,15 +289,10 @@ private fun HomeFloatingActionButton(
 private fun EditMessage(shown: Boolean) {
     AnimatedVisibility(
         visible = shown,
-        // AnimatedVisibility의 기본 동작은 fading과 expanding.
-        // 이를 변경하고 임의의 동작을 지정하고 싶다면 enter & exit 값을 주면 된다.
-        //
-        // slideInVertically & slideOutVertically의 기본 동작은 composable의 절반 높이까지만.
-        // 전체 높이에 전환 동작을 적용하려면 initialOffsetY & targetOffsetY를 이용한다.
         enter = slideInVertically(
             // Enters by sliding down from offset -fullHeight to 0.
             initialOffsetY = { fullHeight -> -fullHeight },
-            animationSpec = tween(durationMillis = 150, easing = LinearOutSlowInEasing), // 세부 커스터마이징
+            animationSpec = tween(durationMillis = 150, easing = LinearOutSlowInEasing),
         ),
         exit = slideOutVertically(
             // Exits by sliding up from offset 0 to -fullHeight.
@@ -460,12 +450,8 @@ private fun HomeTabIndicator(
     tabPositions: List<TabPosition>,
     tabPage: TabPage
 ) {
-    // 여러 값 변화를 동시에 animate 하려면 Transition을 활용한다.
-    // updateTransition 함수를 이용하여 Transition 생성
-    // 각 값은 Transition의 animate* 확장 함수를 이용해 선언
     val transition = updateTransition(tabPage, label = "Tab indicator")
     val indicatorLeft by transition.animateDp(
-        // animate*AsState와 마찬가지로 transitionSpec를 이용한 커스터마이징 가능
         transitionSpec = {
             if (TabPage.Home isTransitioningTo TabPage.Work) {
                 // Indicator moves to the right.
@@ -584,18 +570,16 @@ private fun WeatherRow(
  */
 @Composable
 private fun LoadingRow() {
-    // 무기한으로 반복하는 애니메이션 효과를 넣으려면 InfiniteTransition를 쓴다.
     val infiniteTransition = rememberInfiniteTransition()
     val alpha by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            // 전체 duration 중 특정 지점에서의 값 수준을 지정할 수 있다!
             animation = keyframes {
                 durationMillis = 1000
                 0.7f at 500
             },
-            repeatMode = RepeatMode.Reverse   // 디폴트는 RepeatMode.Restart
+            repeatMode = RepeatMode.Reverse
         )
     )
     Row(
@@ -670,7 +654,7 @@ private fun Modifier.swipeToDismiss(
             while (true) {
                 // Wait for a touch down event.
                 val pointerId = awaitPointerEventScope { awaitFirstDown().id }
-                offsetX.stop()   // 진행 중인 animation이 있으면 중단시킨다.
+                offsetX.stop()
                 // Prepare for drag events and record velocity of a fling.
                 val velocityTracker = VelocityTracker()
                 // Wait for drag events.
@@ -694,7 +678,6 @@ private fun Modifier.swipeToDismiss(
                 val velocity = velocityTracker.calculateVelocity().x
                 // the current velocity and position
                 val targetOffsetX = decay.calculateTargetValue(offsetX.value, velocity)
-                // bound 설정
                 offsetX.updateBounds(
                     lowerBound = -size.width.toFloat(),
                     upperBound = size.width.toFloat()
