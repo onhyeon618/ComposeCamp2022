@@ -27,36 +27,65 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.samples.crane.ui.captionTextStyle
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 
+// 상태를 "보여주는" 코드와 "로직을 처리하는" 코드를 분리하기 -> state holder 사용
+// 아래는 상태를 "보여주는" 역할을 하는 composable.
+// EditableUserInputState를 받아서 그 값을 화면에 그려준다.
 @Composable
 fun CraneEditableUserInput(
-    hint: String,
+    state: EditableUserInputState = rememberEditableUserInputState(""),
     caption: String? = null,
     @DrawableRes vectorImageId: Int? = null,
-    onInputChanged: (String) -> Unit
 ) {
-    // TODO Codelab: Encapsulate this state in a state holder
-    var textState by remember { mutableStateOf(hint) }
-    val isHint = { textState == hint }
-
     CraneBaseUserInput(
         caption = caption,
-        tintIcon = { !isHint() },
-        showCaption = { !isHint() },
+        tintIcon = { !state.isHint },
+        showCaption = { !state.isHint },
         vectorImageId = vectorImageId
     ) {
         BasicTextField(
-            value = textState,
-            onValueChange = {
-                textState = it
-                if (!isHint()) onInputChanged(textState)
-            },
-            textStyle = if (isHint()) {
+            value = state.text,
+            onValueChange = { state.text = it },
+            textStyle = if (state.isHint) {
                 captionTextStyle.copy(color = LocalContentColor.current)
             } else {
                 MaterialTheme.typography.body1.copy(color = LocalContentColor.current)
             },
             cursorBrush = SolidColor(LocalContentColor.current)
+        )
+    }
+}
+
+// composition에 유지하기 위해서는 state holder가 remember되어야 한다.
+// rememberSaveable의 saver 필드를 통해 동작 방식(인스턴스를 저장, 복원하는 방법)을 직접 정의해줄 수 있다.
+@Composable
+fun rememberEditableUserInputState(hint: String): EditableUserInputState =
+    rememberSaveable(hint, saver = EditableUserInputState.Saver) {
+        EditableUserInputState(hint, hint)
+    }
+
+// 실제 값을 저장하고 isHint 로직을 처리하는 것은 이쪽.
+class EditableUserInputState(private val hint: String, initialText: String) {
+    var text by mutableStateOf(initialText)
+
+    val isHint: Boolean
+        get() = text == hint
+
+    companion object {
+        val Saver: Saver<EditableUserInputState, *> = listSaver(
+            save = { listOf(it.hint, it.text) },
+            restore = {
+                EditableUserInputState(
+                    hint = it[0],
+                    initialText = it[1],
+                )
+            }
         )
     }
 }
