@@ -58,8 +58,6 @@ import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
-import coil.request.ImageRequest
 import coil.request.ImageRequest.Builder
 import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.insets.navigationBarsPadding
@@ -83,10 +81,6 @@ fun ExploreSection(
                 val listState = rememberLazyListState()
                 ExploreList(exploreList, onItemClicked, listState = listState)
 
-                // 이렇게 하지 말 것!! 이렇게 하면 recomposition 될 때마다 호출당한다.
-                // val showButton = listState.firstVisibleItemIndex > 0
-
-                // derivedStateOf를 사용, listState.firstVisibleItemIndex가 바뀌었을 때만 계산(호출)하게 할 것.
                 val showButton by remember {
                     derivedStateOf {
                         listState.firstVisibleItemIndex > 0

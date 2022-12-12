@@ -104,10 +104,7 @@ fun DetailsScreen(
     modifier: Modifier = Modifier,
     viewModel: DetailsViewModel = viewModel()
 ) {
-    // produceState: non-Compose state를 Compose State로 변환시켜준다.
     val uiState by produceState(initialValue = DetailsUiState(isLoading = true)) {
-        // In a coroutine, this can call suspend functions or move
-        // the computation to different Dispatchers
         val cityDetailsResult = viewModel.cityDetails
         value = if (cityDetailsResult is Result.Success<ExploreModel>) {
             DetailsUiState(cityDetailsResult.data)
@@ -116,7 +113,6 @@ fun DetailsScreen(
         }
     }
 
-    // uiState의 상태에 따라서 화면 그리기
     when {
         uiState.cityDetails != null -> {
             DetailsContent(uiState.cityDetails!!, modifier.fillMaxSize())

@@ -24,10 +24,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.samples.crane.R
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import com.google.android.libraries.maps.GoogleMap
-import com.google.android.libraries.maps.MapView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.google.android.libraries.maps.GoogleMap
+import com.google.android.libraries.maps.MapView
 
 /**
  * Remembers a MapView and gives it the lifecycle of the current LifecycleOwner
@@ -42,11 +42,7 @@ fun rememberMapViewWithLifecycle(): MapView {
     }
 
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    // LaunchedEffect처럼, DisposableEffect도 key가 바뀌면 내용물이 다시 실행된다.
-    // DisposableEffect의 경우 dispose 동작에 특화된 side effect라고 생각하면 될 듯.
-    // 여기서는 mapView가 생명주기를 제대로 따르도록 하기 위하여 추가했다.
     DisposableEffect(key1 = lifecycle, key2 = mapView) {
-        // Make MapView follow the current lifecycle
         val lifecycleObserver = getMapLifecycleObserver(mapView)
         lifecycle.addObserver(lifecycleObserver)
         onDispose {

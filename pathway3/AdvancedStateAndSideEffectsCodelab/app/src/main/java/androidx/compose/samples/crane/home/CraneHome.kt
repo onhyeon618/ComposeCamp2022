@@ -59,9 +59,6 @@ fun CraneHome(
             modifier = modifier.padding(padding),
             onExploreItemClicked = onExploreItemClicked,
             openDrawer = {
-                // scaffoldState.drawerState.open()은 suspend 함수이므로 그냥 호출할 수는 없다.
-                // LaunchedEffect는 composable 안에서 호출되는 것이므로 이것도 사용 불가.
-                // 이럴 때는 rememberCoroutineScope()를 이용한다.
                 scope.launch {
                     scaffoldState.drawerState.open()
                 }
@@ -78,8 +75,6 @@ fun CraneHomeContent(
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = viewModel(),
 ) {
-    // suggestedDestinations에 새 아이템이 emit 될 때마다 UI를 업데이트하고자 한다...
-    // StateFlow.collectAsState(): StateFlow의 값을 수집, 가장 최신 상태의 값을 "보여"준다.
     val suggestedDestinations by viewModel.suggestedDestinations.collectAsState()
 
     val onPeopleChanged: (Int) -> Unit = { viewModel.updatePeople(it) }

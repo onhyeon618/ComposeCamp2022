@@ -94,7 +94,6 @@ fun FromDestination() {
 
 @Composable
 fun ToDestinationUserInput(onToDestinationChanged: (String) -> Unit) {
-    // state를 여기에서 넣어주게 되었음에 주목!
     val editableUserInputState = rememberEditableUserInputState(hint = "Choose Destination")
     CraneEditableUserInput(
         state = editableUserInputState,
