@@ -116,7 +116,9 @@ fun RallyApp() {
                     // (안전하게 처리하려면 default 값 제공 가능.)
                     route = SingleAccount.routeWithArgs,
                     // 2. "make this composable aware that it should accept arguments" -> 파라미터로 추가하여 처리
-                    arguments = SingleAccount.arguments
+                    arguments = SingleAccount.arguments,
+                    // 딥링크를 처리하기 위한 인자 추가
+                    deepLinks = SingleAccount.deepLinks
                 ) { navBackStackEntry ->
                     // NavBackStackEntry에서 필요한 인자값 받아오기
                     val accountType = navBackStackEntry.arguments?.getString(SingleAccount.accountTypeArg)
