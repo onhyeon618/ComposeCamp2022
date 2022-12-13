@@ -28,6 +28,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.compose.rally.ui.components.RallyTabRow
 import com.example.compose.rally.ui.theme.RallyTheme
 
@@ -48,6 +51,9 @@ class RallyActivity : ComponentActivity() {
 fun RallyApp() {
     RallyTheme {
         var currentScreen: RallyDestination by remember { mutableStateOf(Overview) }
+        // compose에서 navigation작업을 할 때는 NavController가 주축이 된다. rememberNavController()로 생성 가능.
+        // 모든 곳에서 접근 가능해야 하므로 composable 계층의 최상단에 위치해야 한다.
+        val navController = rememberNavController()
         Scaffold(
             topBar = {
                 RallyTabRow(
@@ -57,8 +63,23 @@ fun RallyApp() {
                 )
             }
         ) { innerPadding ->
-            Box(Modifier.padding(innerPadding)) {
-                currentScreen.screen()
+            // NavHost: acts as a container, responsible for displaying the current destination
+            // 현재 화면(navigate된 목적지)를 보여주는 역할. 이동할 때마다 자동으로 recompose 된다.
+            NavHost(
+                navController = navController,
+                startDestination = Overview.route,   // 앱 기동 시 시작하는 위치
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                // 여기에서 navigation graph를 "그린"다.
+                composable(route = Overview.route) {   // adds the destination to your nav graph
+                    Overview.screen()                  // define the actual UI to be displayed
+                }
+                composable(route = Accounts.route) {
+                    Accounts.screen()
+                }
+                composable(route = Bills.route) {
+                    Bills.screen()
+                }
             }
         }
     }
