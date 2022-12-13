@@ -13,10 +13,8 @@ class TopAppBarTest {
 
     @Test
     fun rallyTopAppBarTest() {
-        // 우리가 컨트롤할 수 있는 더미데이터
         val allScreens = RallyScreen.values().toList()
 
-        // setContent를 이용하여 어떤 compose를 테스트할 건지 설정
         composeTestRule.setContent {
             RallyTopAppBar(
                 allScreens = allScreens,
@@ -25,8 +23,6 @@ class TopAppBarTest {
             )
         }
 
-        // composeTestRule{.finder}{.assertion}{.action}
-        // 테스트는 다음의 규칙에 따라서 진행된다.
         composeTestRule
             .onNodeWithContentDescription(RallyScreen.Accounts.name)
             .assertIsSelected()
@@ -43,7 +39,6 @@ class TopAppBarTest {
             )
         }
 
-        // 머지되지 않은, 전체 트리의 구조를 보려면 useUnmergedTree = true 값을 주도록 한다.
         composeTestRule.onRoot(useUnmergedTree = true).printToLog("currentLabelExists")
 
         composeTestRule
