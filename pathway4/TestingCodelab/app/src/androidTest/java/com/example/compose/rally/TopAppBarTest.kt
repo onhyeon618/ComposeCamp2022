@@ -43,11 +43,17 @@ class TopAppBarTest {
             )
         }
 
-        // Semantics tree를 출력해 볼 수 있다.
-        composeTestRule.onRoot().printToLog("currentLabelExists")
+        // 머지되지 않은, 전체 트리의 구조를 보려면 useUnmergedTree = true 값을 주도록 한다.
+        composeTestRule.onRoot(useUnmergedTree = true).printToLog("currentLabelExists")
 
         composeTestRule
-            .onNodeWithContentDescription(RallyScreen.Accounts.name)
+            .onNode(
+                hasText(RallyScreen.Accounts.name.uppercase()) and
+                        hasParent(
+                            hasContentDescription(RallyScreen.Accounts.name)
+                        ),
+                useUnmergedTree = true
+            )
             .assertExists()
     }
 }
