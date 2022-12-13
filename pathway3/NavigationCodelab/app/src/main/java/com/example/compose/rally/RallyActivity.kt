@@ -28,8 +28,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.rally.ui.components.RallyTabRow
 import com.example.compose.rally.ui.theme.RallyTheme
@@ -50,15 +53,22 @@ class RallyActivity : ComponentActivity() {
 @Composable
 fun RallyApp() {
     RallyTheme {
-        var currentScreen: RallyDestination by remember { mutableStateOf(Overview) }
         // compose에서 navigation작업을 할 때는 NavController가 주축이 된다. rememberNavController()로 생성 가능.
         // 모든 곳에서 접근 가능해야 하므로 composable 계층의 최상단에 위치해야 한다.
         val navController = rememberNavController()
+
+        // NavController로부터 현재 위치 가져오기...
+        val currentBackStack by navController.currentBackStackEntryAsState()
+        val currentDestination = currentBackStack?.destination
+        val currentScreen =             rallyTabRowScreens.find { it.route == currentDestination?.route } ?: Overview
+
         Scaffold(
             topBar = {
                 RallyTabRow(
                     allScreens = rallyTabRowScreens,
-                    onTabSelected = { screen -> currentScreen = screen },
+                    onTabSelected = { newScreen ->
+                        navController.navigateSingleTopTo(newScreen.route)
+                    },
                     currentScreen = currentScreen
                 )
             }
@@ -84,3 +94,14 @@ fun RallyApp() {
         }
     }
 }
+
+fun NavHostController.navigateSingleTopTo(route: String) =
+    this.navigate(route) {
+        popUpTo(
+            this@navigateSingleTopTo.graph.findStartDestination().id
+        ) {
+            saveState = true     // popUpTo(startDestination): pop하면 바로 startDestination로 감. 스택 마구 쌓이지 X
+        }
+        launchSingleTop = true   // 동일 화면이 여러 번 생성되는 것 방지
+        restoreState = true      // 다른 화면으로 이동했을 때도 현재 화면의 상태 유지 -> 돌아오면 새로 로딩하는 게 아니라 기존 상태 보여줌
+    }
