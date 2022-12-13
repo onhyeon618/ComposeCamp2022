@@ -66,7 +66,8 @@ fun RallyApp() {
         // NavController로부터 현재 위치 가져오기...
         val currentBackStack by navController.currentBackStackEntryAsState()
         val currentDestination = currentBackStack?.destination
-        val currentScreen =             rallyTabRowScreens.find { it.route == currentDestination?.route } ?: Overview
+        val currentScreen =
+            rallyTabRowScreens.find { it.route == currentDestination?.route } ?: Overview
 
         Scaffold(
             topBar = {
@@ -79,68 +80,60 @@ fun RallyApp() {
                 )
             }
         ) { innerPadding ->
-            // NavHost: acts as a container, responsible for displaying the current destination
-            // 현재 화면(navigate된 목적지)를 보여주는 역할. 이동할 때마다 자동으로 recompose 된다.
-            NavHost(
+            RallyNavHost(
                 navController = navController,
-                startDestination = Overview.route,   // 앱 기동 시 시작하는 위치
                 modifier = Modifier.padding(innerPadding)
-            ) {
-                // 여기에서 navigation graph를 "그린"다.
-                composable(route = Overview.route) {   // adds the destination to your nav graph
-                    OverviewScreen(
-                        onClickSeeAllAccounts = {
-                            navController.navigateSingleTopTo(Accounts.route)
-                        },
-                        onClickSeeAllBills = {
-                            navController.navigateSingleTopTo(Bills.route)
-                        },
-                        onAccountClick = { accountType ->
-                            navController.navigateToSingleAccount(accountType)
-                        }
-                    )   // define the actual UI to be displayed
-                }
-                composable(route = Accounts.route) {
-                    AccountsScreen(
-                        onAccountClick = { accountType ->
-                            navController.navigateToSingleAccount(accountType)
-                        }
-                    )
-                }
-                composable(route = Bills.route) {
-                    BillsScreen()
-                }
-                composable(
-                    // navigate 할 때 argument를 담아서 주기
-                    // 1. 주소는 route/{argument} 패턴 -> 이렇게 하면 해당 화면으로 이동할 때는 argument가 필수
-                    // (안전하게 처리하려면 default 값 제공 가능.)
-                    route = SingleAccount.routeWithArgs,
-                    // 2. "make this composable aware that it should accept arguments" -> 파라미터로 추가하여 처리
-                    arguments = SingleAccount.arguments,
-                    // 딥링크를 처리하기 위한 인자 추가
-                    deepLinks = SingleAccount.deepLinks
-                ) { navBackStackEntry ->
-                    // NavBackStackEntry에서 필요한 인자값 받아오기
-                    val accountType = navBackStackEntry.arguments?.getString(SingleAccount.accountTypeArg)
+            )
+        }
+    }
+}
 
-                    // SingleAccountScreen 화면 생성에 사용
-                    SingleAccountScreen(accountType)
+@Composable
+fun RallyNavHost(
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+) {
+    NavHost(
+        navController = navController,
+        startDestination = Overview.route,
+        modifier = modifier
+    ) {
+        composable(route = Overview.route) {
+            OverviewScreen(
+                onClickSeeAllAccounts = {
+                    navController.navigateSingleTopTo(Accounts.route)
+                },
+                onClickSeeAllBills = {
+                    navController.navigateSingleTopTo(Bills.route)
+                },
+                onAccountClick = { accountType ->
+                    navController.navigateToSingleAccount(accountType)
                 }
-            }
+            )
+        }
+        composable(route = Accounts.route) {
+            AccountsScreen(
+                onAccountClick = { accountType ->
+                    navController.navigateToSingleAccount(accountType)
+                }
+            )
+        }
+        composable(route = Bills.route) {
+            BillsScreen()
+        }
+        composable(
+            route = SingleAccount.routeWithArgs,
+            arguments = SingleAccount.arguments,
+            deepLinks = SingleAccount.deepLinks
+        ) { navBackStackEntry ->
+            val accountType = navBackStackEntry.arguments?.getString(SingleAccount.accountTypeArg)
+            SingleAccountScreen(accountType)
         }
     }
 }
 
 fun NavHostController.navigateSingleTopTo(route: String) =
-    this.navigate(route) {
-        popUpTo(
-            this@navigateSingleTopTo.graph.findStartDestination().id
-        ) {
-            saveState = true     // popUpTo(startDestination): pop하면 바로 startDestination로 감. 스택 마구 쌓이지 X
-        }
-        launchSingleTop = true   // 동일 화면이 여러 번 생성되는 것 방지
-        restoreState = true      // 다른 화면으로 이동했을 때도 현재 화면의 상태 유지 -> 돌아오면 새로 로딩하는 게 아니라 기존 상태 보여줌
-    }
+    this.navigate(route) { launchSingleTop = true }
 
 private fun NavHostController.navigateToSingleAccount(accountType: String) {
     this.navigateSingleTopTo("${SingleAccount.route}/$accountType")
