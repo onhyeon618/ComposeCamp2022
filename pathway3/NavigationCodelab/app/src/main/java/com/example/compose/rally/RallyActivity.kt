@@ -30,11 +30,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.compose.rally.ui.accounts.AccountsScreen
+import com.example.compose.rally.ui.accounts.SingleAccountScreen
 import com.example.compose.rally.ui.bills.BillsScreen
 import com.example.compose.rally.ui.components.RallyTabRow
 import com.example.compose.rally.ui.overview.OverviewScreen
@@ -91,14 +94,35 @@ fun RallyApp() {
                         },
                         onClickSeeAllBills = {
                             navController.navigateSingleTopTo(Bills.route)
+                        },
+                        onAccountClick = { accountType ->
+                            navController.navigateToSingleAccount(accountType)
                         }
                     )   // define the actual UI to be displayed
                 }
                 composable(route = Accounts.route) {
-                    AccountsScreen()
+                    AccountsScreen(
+                        onAccountClick = { accountType ->
+                            navController.navigateToSingleAccount(accountType)
+                        }
+                    )
                 }
                 composable(route = Bills.route) {
                     BillsScreen()
+                }
+                composable(
+                    // navigate 할 때 argument를 담아서 주기
+                    // 1. 주소는 route/{argument} 패턴 -> 이렇게 하면 해당 화면으로 이동할 때는 argument가 필수
+                    // (안전하게 처리하려면 default 값 제공 가능.)
+                    route = SingleAccount.routeWithArgs,
+                    // 2. "make this composable aware that it should accept arguments" -> 파라미터로 추가하여 처리
+                    arguments = SingleAccount.arguments
+                ) { navBackStackEntry ->
+                    // NavBackStackEntry에서 필요한 인자값 받아오기
+                    val accountType = navBackStackEntry.arguments?.getString(SingleAccount.accountTypeArg)
+
+                    // SingleAccountScreen 화면 생성에 사용
+                    SingleAccountScreen(accountType)
                 }
             }
         }
@@ -115,3 +139,7 @@ fun NavHostController.navigateSingleTopTo(route: String) =
         launchSingleTop = true   // 동일 화면이 여러 번 생성되는 것 방지
         restoreState = true      // 다른 화면으로 이동했을 때도 현재 화면의 상태 유지 -> 돌아오면 새로 로딩하는 게 아니라 기존 상태 보여줌
     }
+
+private fun NavHostController.navigateToSingleAccount(accountType: String) {
+    this.navigateSingleTopTo("${SingleAccount.route}/$accountType")
+}
