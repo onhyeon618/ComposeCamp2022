@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Divider
@@ -43,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -158,6 +160,13 @@ private fun TopicItem(itemTitle: String, selected: Boolean, onToggle: () -> Unit
     val image = painterResource(R.drawable.placeholder_1_1)
     Row(
         modifier = Modifier
+            // Row 전체에 toggleable()을 걸고 Checkbox의 onCheckedChange 콜백을 끌어올림으로써
+            // TalkBack이 Checkbox 뿐 아니라 해당 Row 전체를 인식하게 한다. (-> 라벨도 같이 읽게 하기 위함)
+            .toggleable(
+                value = selected,
+                onValueChange = { _ -> onToggle() },
+                role = Role.Checkbox
+            )
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Image(
@@ -178,7 +187,7 @@ private fun TopicItem(itemTitle: String, selected: Boolean, onToggle: () -> Unit
         Spacer(Modifier.weight(1f))
         Checkbox(
             checked = selected,
-            onCheckedChange = { onToggle() },
+            onCheckedChange = null,
             modifier = Modifier.align(Alignment.CenterVertically)
         )
     }
