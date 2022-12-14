@@ -39,6 +39,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,7 +54,14 @@ import com.example.jetnews.ui.theme.JetnewsTheme
 fun PostCardHistory(post: Post, navigateToArticle: (String) -> Unit) {
     var openDialog by remember { mutableStateOf(false) }
     Row(
-        Modifier.clickable { navigateToArticle(post.id) }
+        Modifier.clickable(
+            // TalkBack이 안내하는 문구를 직접 지정해줄 수 있다.
+            // ex) Double-tap to activate(default) -> Double-tap to read article
+            // R.string.action_read_article = "read article"
+            onClickLabel = stringResource(R.string.action_read_article)
+        ) {
+            navigateToArticle(post.id)
+        }
     ) {
         Image(
             painter = painterResource(post.imageThumbId),
@@ -130,9 +139,13 @@ fun PostCardPopular(
     navigateToArticle: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val readArticleLabel = stringResource(id = R.string.action_read_article)
     Card(
         shape = MaterialTheme.shapes.medium,
-        modifier = modifier.size(280.dp, 240.dp),
+        modifier = modifier
+            .size(280.dp, 240.dp)
+            // Modifier의 .semantics를 이용하여 안내 문구 제공하기
+            .semantics { onClick(label = readArticleLabel, action = null) },
         onClick = { navigateToArticle(post.id) }
     ) {
         Column {
