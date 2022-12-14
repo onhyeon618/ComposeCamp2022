@@ -17,7 +17,6 @@
 package com.example.jetnews.ui.article
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Icon
@@ -99,8 +98,6 @@ fun ArticleScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
-                            // contentDescription. 이건 기존 xml 방식과 크게 다르지 않다.
-                            // null을 주면 단순한 꾸미기용 이미지로 인식하여 스킵한다. 이 경우는 버튼이라 조금 다른 케이스지만...
                             contentDescription = stringResource(
                                 R.string.cd_navigate_up
                             )

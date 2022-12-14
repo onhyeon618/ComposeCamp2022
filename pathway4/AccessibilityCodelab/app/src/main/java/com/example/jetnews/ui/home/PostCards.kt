@@ -56,19 +56,14 @@ fun PostCardHistory(post: Post, navigateToArticle: (String) -> Unit) {
     Row(
         Modifier
             .clickable(
-                // TalkBack이 안내하는 문구를 직접 지정해줄 수 있다.
-                // ex) Double-tap to activate(default) -> Double-tap to read article
-                // R.string.action_read_article = "read article"
                 onClickLabel = stringResource(R.string.action_read_article)
             ) {
                 navigateToArticle(post.id)
             }
             .semantics {
-                // semantics {} 안에서 커스텀 동작을 지정해줄 수 있다!
                 customActions = listOf(
                     CustomAccessibilityAction(
                         label = showFewerLabel,
-                        // action returns boolean to indicate success
                         action = { openDialog = true; true }
                     )
                 )
@@ -103,10 +98,7 @@ fun PostCardHistory(post: Post, navigateToArticle: (String) -> Unit) {
             }
         }
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            // 클릭 영역의 크기는 최소 48dp여야 한다.
-            // 버튼에 반영하는 가장 쉬운 방법은 이미 그렇게 선언되어 있는 IconButton을 사용하는 것.
             IconButton(
-                // semantics 영역에서 제외하기 (Flutter의 ExcludeSemantics?)
                 modifier = Modifier.clearAndSetSemantics { },
                 onClick = { openDialog = true }
             ) {
@@ -159,7 +151,6 @@ fun PostCardPopular(
         shape = MaterialTheme.shapes.medium,
         modifier = modifier
             .size(280.dp, 240.dp)
-            // Modifier의 .semantics를 이용하여 안내 문구 제공하기
             .semantics { onClick(label = readArticleLabel, action = null) },
         onClick = { navigateToArticle(post.id) }
     ) {

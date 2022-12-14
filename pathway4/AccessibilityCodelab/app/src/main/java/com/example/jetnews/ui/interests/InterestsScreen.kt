@@ -56,7 +56,6 @@ import com.example.jetnews.data.interests.TopicSelection
 import com.example.jetnews.data.interests.TopicsMap
 import com.example.jetnews.ui.components.InsetAwareTopAppBar
 import com.example.jetnews.ui.theme.JetnewsTheme
-import com.google.accompanist.insets.navigationBarsPadding
 import kotlinx.coroutines.launch
 
 /**
@@ -165,15 +164,12 @@ private fun TopicItem(itemTitle: String, selected: Boolean, onToggle: () -> Unit
     Row(
         modifier = Modifier
             .semantics {
-                // 상태 문구 커스텀 지정
                 stateDescription = if (selected) {
                     stateSubscribed
                 } else {
                     stateNotSubscribed
                 }
             }
-            // Row 전체에 toggleable()을 걸고 Checkbox의 onCheckedChange 콜백을 끌어올림으로써
-            // TalkBack이 Checkbox 뿐 아니라 해당 Row 전체를 인식하게 한다. (-> 라벨도 같이 읽게 하기 위함)
             .toggleable(
                 value = selected,
                 onValueChange = { _ -> onToggle() },
